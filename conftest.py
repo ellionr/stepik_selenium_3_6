@@ -1,15 +1,18 @@
-import pytest
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+import pytest
 
 
 def pytest_addoption(parser):
-    parser.addoption('--language', action='store', default='ru')
+    parser.addoption('--language', action='store', default='de',
+                     help='Choose language to display')
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def browser(request):
-    language = request.config.getoption("language")
-    browser = webdriver.Chrome()
-    browser.get(f'https://selenium1py.pythonanywhere.com/{language}/catalogue/coders-at-work_207/')
+    user_language = request.config.getoption("language")
+    options = Options()
+    options.add_experimental_option('prefs', {'intl.accept_languages': user_language})
+    browser = webdriver.Chrome(options=options)
     yield browser
     browser.quit()
